@@ -19,7 +19,9 @@ func NewServer() *Server {
 }
 
 func (server *Server) Serve() error {
-	server.fiber.Post("/blueprint", server.PostBlueprint)
+	server.fiber.Post("/blueprint", server.postBlueprint)
+	server.fiber.Post("/rooms/:room/exit", server.postRoomExit)
+	server.fiber.Post("/rooms/:room/enter", server.postRoomEnter)
 
 	return server.fiber.Listen(":3000")
 }

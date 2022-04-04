@@ -3,52 +3,64 @@ package blueprint
 import "fmt"
 
 type Room struct {
-	Entrance bool
+	Entrance  bool
 	Occupants int
 	Doorways  map[string]*Room
 }
 
-type roomJSON struct {
-	Entrance bool `json:"entrance"`
+func MakeRoom() Room {
+	return Room{
+		Doorways: make(map[string]*Room),
+	}
+}
+
+type RoomJSON struct {
+	Entrance bool     `json:"entrance"`
 	Doorways []string `json:"doorways"`
 }
 
-func (room *Room) Enter(from ...string) (int, error) {
+func (room *Room) Enter(from ...string) error {
 	if room == nil {
-		return 0, fmt.Errorf("Can't enter a nil room")
+		return fmt.Errorf("Can't enter a nil room")
 	}
 
 	if len(from) == 0 && !room.Entrance {
-		return room.Occupants, fmt.Errorf("Non entrances must include a `from` argument")
-	}
-
-	exitedRoom, exists := room.Doorways[from[0]]
-	if !exists {
-		return room.Occupants, fmt.Errorf("This room doesn't have a doorway to %v", from[0])
+		return fmt.Errorf("Non entrances must include a `from` argument")
 	}
 
 	room.Occupants++
-	exitedRoom.Occupants--
 
-	return room.Occupants, nil
+	if len(from) > 0 && len(from[0]) > 0 {
+		exitedRoom, exists := room.Doorways[from[0]]
+		if !exists {
+			return fmt.Errorf("This room doesn't have a doorway to %v", from[0])
+		}
+
+		exitedRoom.Occupants--
+	}
+
+	return nil
 }
 
-func (room *Room) Exit(to ...string) (int, error) {
+func (room *Room) Exit(to ...string) error {
 	if room == nil {
-		return 0, fmt.Errorf("Can't exit a nil room")
+		return fmt.Errorf("Can't exit a nil room")
 	}
 
 	if len(to) == 0 && !room.Entrance {
-		return room.Occupants, fmt.Errorf("Non entrances must include a `to` argument")
-	}
-
-	enteredRoom, exists := room.Doorways[to[0]]
-	if !exists {
-		return room.Occupants, fmt.Errorf("This room doesn't have a door to %v", to[0])
+		return fmt.Errorf("Non entrances must include a `to` argument")
 	}
 
 	room.Occupants--
-	enteredRoom.Occupants++
+	
+	if len(to) > 0 && len(to[0]) > 0 {
+		enteredRoom, exists := room.Doorways[to[0]]
+		if !exists {
+			return fmt.Errorf("This room doesn't have a door to %v", to[0])
+		}
+		
+		enteredRoom.Occupants++
+	}
 
-	return room.Occupants, nil
+	return nil
 }

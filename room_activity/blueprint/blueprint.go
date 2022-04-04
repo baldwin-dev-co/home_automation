@@ -11,21 +11,23 @@ func MakeBlueprint() Blueprint {
 	return Blueprint(make(map[string]*Room, 0))
 }
 
-type blueprintJSON map[string]roomJSON
+type BlueprintJSON map[string]RoomJSON
 
 func (blueprint *Blueprint) UnmarshalJSON(data []byte) error {
 	if blueprint == nil || *blueprint == nil {
 		return fmt.Errorf("Can't unmarhsal into a nil pointer")
 	}
 
-	var aux blueprintJSON
+	var aux BlueprintJSON
 	err := json.Unmarshal(data, &aux)
 	if err != nil {
 		return err
 	}
 
 	for k, v := range aux {
-		(*blueprint)[k] = &Room{Entrance: v.Entrance}
+		room := MakeRoom()
+		room.Entrance = v.Entrance
+		(*blueprint)[k] = &room
 	}
 
 	for k, room := range aux {

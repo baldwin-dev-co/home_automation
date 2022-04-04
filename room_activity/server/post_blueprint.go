@@ -6,7 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func (server *Server) PostBlueprint(c *fiber.Ctx) error {
+func (server *Server) postBlueprint(c *fiber.Ctx) error {
 	bp := blueprint.MakeBlueprint()
 	err := c.BodyParser(&bp)
 	if  err != nil {
