@@ -1,7 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"room_activity/server"
+)
 
 func main() {
-	fmt.Println("Hello")
+	server.NewServer().Serve()
 }
